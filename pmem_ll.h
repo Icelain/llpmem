@@ -30,4 +30,7 @@ void cleanupListPmem(PmemNode *head);
 
 void traversePmemNode(PmemNode *head);
 
+PMEMobjpool *getPmemObjectPool(const char *path);
+void closePmemObjectPool(PMEMobjpool *pool);
+
 #endif /* PMEM_LOCK_FREE_LIST_H */
