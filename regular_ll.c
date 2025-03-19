@@ -10,7 +10,6 @@ typedef struct node {
     _Atomic(struct node *) next;
 } Node;
 
-// Create a new node
 Node *createNode(int value) {
     Node *res = (Node *)malloc(sizeof(Node));
     if (res == NULL) {
