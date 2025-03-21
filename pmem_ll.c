@@ -5,19 +5,23 @@
  * persistent_lockfree_list.c - example of persistent lock-free linked list
  */
 #include "pmemobj_list.h"
-#include <ex_common.h>
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 POBJ_LAYOUT_BEGIN(list);
 POBJ_LAYOUT_ROOT(list, struct list_root);
 POBJ_LAYOUT_TOID(list, struct list_node);
 POBJ_LAYOUT_END(list);
 
+bool file_exists(const char *filename) {
+    struct stat buffer;
+    return (stat(filename, &buffer) == 0);
+}
 struct list_node {
     int value;
     _Atomic(TOID(struct list_node)) next;
