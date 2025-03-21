@@ -46,7 +46,6 @@ static inline TOID(struct list_node) getMarkedPtr(TOID(struct list_node) node) {
     return TOID_ASSIGN(struct list_node, oid);
 }
 
-// Create a new node in persistent memory
 TOID(struct list_node) createPersistentNode(PMEMobjpool *pop, int value) {
     TOID(struct list_node) node;
 
@@ -66,7 +65,6 @@ TOID(struct list_node) createPersistentNode(PMEMobjpool *pop, int value) {
     return node;
 }
 
-// Insert a value at the end of the list
 void insertValue(PMEMobjpool *pop, TOID(struct list_root) root, int value) {
     TOID(struct list_node) newNode = createPersistentNode(pop, value);
     TOID(struct list_node) prev, curr;
@@ -74,7 +72,6 @@ void insertValue(PMEMobjpool *pop, TOID(struct list_root) root, int value) {
     while (true) {
         prev = D_RW(root)->head;
         if (TOID_IS_NULL(prev)) {
-            // Empty list, try to set the head
             TX_BEGIN(pop) {
                 TX_ADD_FIELD(root, head);
                 if (TOID_IS_NULL(D_RO(root)->head)) {
@@ -100,7 +97,6 @@ void insertValue(PMEMobjpool *pop, TOID(struct list_root) root, int value) {
             continue;
         }
 
-        // Try to append the new node
         TX_BEGIN(pop) {
             TX_ADD_FIELD(prev, next);
             TOID(struct list_node) expected = curr;
@@ -114,7 +110,6 @@ void insertValue(PMEMobjpool *pop, TOID(struct list_root) root, int value) {
     }
 }
 
-// Find a node with the specified value
 TOID(struct list_node) findNode(TOID(struct list_root) root, int value) {
     TOID(struct list_node) current = D_RO(root)->head;
 
@@ -128,7 +123,6 @@ TOID(struct list_node) findNode(TOID(struct list_root) root, int value) {
     return TOID_NULL(struct list_node);
 }
 
-// Mark a node for deletion (logical delete)
 bool markNodeForDeletion(PMEMobjpool *pop, TOID(struct list_root) root,
                          int value) {
     TOID(struct list_node) curr, next;
@@ -161,7 +155,6 @@ bool markNodeForDeletion(PMEMobjpool *pop, TOID(struct list_root) root,
     }
 }
 
-// Physically remove marked nodes and reclaim memory
 int removeMarkedNodes(PMEMobjpool *pop, TOID(struct list_root) root) {
     int removed_count = 0;
     TOID(struct list_node) prev, curr, next;
@@ -232,7 +225,6 @@ int removeMarkedNodes(PMEMobjpool *pop, TOID(struct list_root) root) {
     return removed_count;
 }
 
-// Traverse and print the list (only unmarked nodes)
 void traverseList(TOID(struct list_root) root) {
     TOID(struct list_node) curr = D_RO(root)->head;
 
@@ -254,7 +246,6 @@ void traverseList(TOID(struct list_root) root) {
     printf("\n");
 }
 
-// Clean up all nodes in the list
 void cleanupList(PMEMobjpool *pop, TOID(struct list_root) root) {
     TOID(struct list_node) current = D_RO(root)->head;
     TOID(struct list_node) next;
